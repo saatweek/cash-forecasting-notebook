@@ -511,143 +511,391 @@ After that by multiplying the median growth rate with the amount in 2021, we can
 
 We can already see a big difference in week 7. Investigating it further, we found that only 1 day of week 7 is captured in 2022.So we are eliminating this entire week.
 
+|<img width="689" alt="image" src="https://user-images.githubusercontent.com/43529908/223233642-1117e20b-9222-4b64-adf4-12986f4e67c6.png"> |
+|:----------:|
+| Figure 23 : Week 7 Investigation (Median Growth Rate) |  
 
-Figure 23 : Week 7 Investigation (Median Growth Rate) 
+```
+# loss Calculation
 
+bank_yoy.dropna(inplace=True)
+loss = np.sqrt(np.sum(np.power(bank_yoy['2022_pred']-bank_yoy[2022], 2))/bank_yoy.shape[0])
+print(f'RMSE : {loss}')
+```
 Figure 24 : Loss Calculation (Median Growth Rate) code
                                                                                                                                                                                      And this way, our final loss in the median-growth rate model comes out to be around $26 Million
-3.7 Model Selection
+																		
+### 3.7 Model Selection
 
 The process of selecting the model that best generalizes is referred to as model selection. To mimic unknown data, training and validation sets are utilized. Overfitting occurs when our model performs well on our training dataset but performs badly in general. When our model performs badly on both our training dataset and unknown data, we have underfitting. We may use cross-validation techniques to determine if our model generalizes successfully. RMSE, or root mean squared error, is a frequent assessment statistic.
+
 We are gonna use forecasting models of different categories i.e Statistical models and deep learning models. So based on the loss calculations we will choose the model to predict. 
+
 Here some forecasting techniques are :
-SARIMA
-SARIMA, which stands for Seasonal-AutoRegressive Moving Average model, includes the forecast's seasonality component. The significance of seasonality is pretty obvious, and ARIMA fails to implicitly capture that information.
-SARIMA is an enhancement to ARIMA that allows for direct modeling of the seasonal component of the series. It introduces three new hyperparameters to describe the autoregression (AR), differencing (I), and moving average (MA) for the seasonal component of the series, as well as a new parameter for the seasonality period. There are three trend components that must be configured while establishing a SARIMA.
+
+1. SARIMA
+
+	SARIMA, which stands for **S**easonal-**A**uto**R**egress**i**ve **M**oving **A**verage model, includes the forecast's seasonality component. The significance of seasonality is pretty obvious, and ARIMA fails to implicitly capture that information.
+
+	SARIMA is an enhancement to ARIMA that allows for direct modeling of the seasonal component of the series. It introduces three new hyperparameters to describe the autoregression (AR), differencing (I), and moving average (MA) for the seasonal component of the series, as well as a new parameter for the seasonality period. There are three trend components that must be configured while establishing a SARIMA.
 
 
-They are identical to the ARIMA model, specifically:
-Trend autoregression order (p)
-Trend difference order (d)
-Trend moving average order (q)
+	They are identical to the ARIMA model, specifically:
 
-But in addition of all the trend parameters, SARIMA also needs to be configured with some seasonal parameters that are as follows:
-Seasonal autoregressive order (P)
-Seasonal difference order (D)
-Seasonal moving average order (Q)
-The number of time steps for a single seasonal period. (m)
+		1. Trend autoregression order (p)
+		2. Trend difference order (d)
+		3. Trend moving average order (q)
 
- Prophet
-Prophet is a system for predicting time series data based on an additive model in which non-straight patterns are fit with annual, weekly, and daily irregularity, as well as occasional effects. It works well with time series that have strong occasional impacts and a few instances of verified data.
-On a weekly or annual basis, it is utilized to create goals and distribute resources. Prophet is totally automated so that novices in data forecasting can quickly provide accurate predictions, but it also permits manual tweaking so that professionals may enhance outcomes by incorporating specific expertise. Prophet may automatically discover changes in trends by choosing change points from data and modeling yearly components using the fourier series, which works well with time series that contain seasonal impacts and numerous seasons of historical data. Prophet, however, is resilient to missing data, changes in trend, and generally handles outliers well. Prophet was open sourced by Facebook's core data science team in early 2017. Having been fully optimized for the business duties they confronted at Facebook.
+	But in addition of all the trend parameters, SARIMA also needs to be configured with some seasonal parameters that are as follows:
 
-LSTM
-Long Short-Term Memory (LSTM) is an artificial neural network used in the fields of artificial intelligence and deep learning. Unlike standard feedforward neural networks, LSTM has feedback connections.
-LSTM networks were created specifically to address the issue of long-term dependency. This property allows LSTMs to process entire data sequences (e.g., time series) without having to treat each point in the sequence independently, but rather by retaining useful information about previous data points in sequence to aid in the processing of new data points. As a result, LSTMs excel at processing data sequences such as text, speech, and general time series. 
-This pattern, which exists every 12 periods of time, can be learned by an LSTM network. It does not simply use the previous prediction, but rather keeps a longer-term context in mind, which helps it overcome the long-term dependency issue that other models face. It is worth noting that this is a very simplified example, but LSTMs become increasingly useful when the pattern is separated by much longer periods of time (as in long passages of text, for example).
+		1. Seasonal autoregressive order (P)
+		2. Seasonal difference order (D)
+		3. Seasonal moving average order (Q)
+		4. The number of time steps for a single seasonal period. (m)
 
-3.7.1. SARIMA
+2. Prophet
+
+	Prophet is a system for predicting time series data based on an additive model in which non-straight patterns are fit with annual, weekly, and daily irregularity, as well as occasional effects. It works well with time series that have strong occasional impacts and a few instances of verified data.
+
+	On a weekly or annual basis, it is utilized to create goals and distribute resources. Prophet is totally automated so that novices in data forecasting can quickly provide accurate predictions, but it also permits manual tweaking so that professionals may enhance outcomes by incorporating specific expertise. Prophet may automatically discover changes in trends by choosing change points from data and modeling yearly components using the fourier series, which works well with time series that contain seasonal impacts and numerous seasons of historical data. Prophet, however, is resilient to missing data, changes in trend, and generally handles outliers well. Prophet was open sourced by Facebook's core data science team in early 2017. Having been fully optimized for the business duties they confronted at Facebook.
+
+3. LSTM
+
+	Long Short-Term Memory (LSTM) is an artificial neural network used in the fields of artificial intelligence and deep learning. Unlike standard feedforward neural networks, LSTM has feedback connections.
+
+	LSTM networks were created specifically to address the issue of long-term dependency. This property allows LSTMs to process entire data sequences (e.g., time series) without having to treat each point in the sequence independently, but rather by retaining useful information about previous data points in sequence to aid in the processing of new data points. As a result, LSTMs excel at processing data sequences such as text, speech, and general time series. 
+
+	This pattern, which exists every 12 periods of time, can be learned by an LSTM network. It does not simply use the previous prediction, but rather keeps a longer-term context in mind, which helps it overcome the long-term dependency issue that other models face. It is worth noting that this is a very simplified example, but LSTMs become increasingly useful when the pattern is separated by much longer periods of time (as in long passages of text, for example).
+
+#### 3.7.1. SARIMA
+
 Before we implement SARIMA, we need to understand stationary time series.
+
 A stationary time series is a time series, whose values don’t change over time, i.e., the time series that has no general trend. In these cases summary statistics, like mean and variance of the observation remains consistent over time
+
 In order to eliminate additive seasonal effects, a seasonal ARIMA model employs differencing at a lag equal to the number of seasons (s). The lag s differencing introduces a moving average term, just like lag 1 differencing does to eliminate a trend. Autoregressive and moving average terms are present in the seasonal ARIMA model at lag s.
+
 Statistical models like ARIMA and SARIMA require time series to be stationary to be effective.
+
 We can check whether a time series is stationary by using statistical tests like Augmented Dickey-Fuller test. The null hypothesis is that the time series is not stationary and its alternate hypothesis (rejecting the null hypothesis) is that the time series is stationary. 
+
 We interpret the result using p-value. A p-value below 0.05 (or less than 5%) suggests that our null-hypothesis is wrong (i.e., time-series is stationary) and if it is more than 0.05 then it means the null hypothesis holds (i.e., the time-series is not stationary)
 
 
 Calculating Augmented Dicky-Fuller test on our dataset
+```
+result = adfuller(bank_new['amt'])
+print('ADF Statistic: %f' % result[0])
+print('p-value: %f' % result[1])
+print('Critical Values:')
+for key, value in result[4].items():
+	print('\t%s: %.3f' % (key, value))
+```
 Figure 25 : Calculation of Augmented Dicky-Fuller test
 
 We get the test statistic value of -6.663. Usually the more negative the test statistic, the more likely we are to reject the null hypothesis. 
 Since the p-value is also less than 0.05, this means that our null-hypothesis is wrong, and our time-series is stationary.
+
 We now implement SARIMA, and do a grid search for the best hyper-parameters to get the lowest loss.
+
 We start by defining a single step of the model, that is, a function that takes in a single configurations and fits the model to the data
 
-  Figure 26 : SARIMA forecast code
+```
+# one-step sarima forecast
+def sarima_forecast(history, config):
+	order, sorder, trend = config
+	# define model
+	model = SARIMAX(history, order=order, seasonal_order=sorder, trend=trend, enforce_stationarity=False, enforce_invertibility=False)
+	# fit model
+	model_fit = model.fit(disp=False)
+	# make one step forecast
+	yhat = model_fit.predict(len(history), len(history))
+	return yhat[0]
+```
+Figure 26 : SARIMA forecast code
 
 We need to find the RMSE value for each combination of parameters, so we define our loss function as well
 
-
+```
+# root mean squared error or rmse
+def measure_rmse(actual, predicted):
+	return sqrt(mean_squared_error(actual, predicted))
+```
 Figure 27 : RMSE code
-We would also need to split our dataset into train and test set, so we made a train_test_split() function to achieve that 
 
+We would also need to split our dataset into train and test set, so we made a `train_test_split()` function to achieve that 
+```
+# split a univariate dataset into train/test sets
+def train_test_split(data, n_test):
+	return data[:-n_test], data[-n_test:]
+```
 Figure 28 : Splitting univariant dataset
 
-First, the train test split() function divides the supplied univariate time series dataset into training and test sets. Then the number of observations in the test set are enumerated. We make a one step forecast and for all the history we fit a model for each. The history and process is repeated for the true observation for the time step.to make a prediction we fit a model by calling the sarima_forecast() function. Finally the measure_rmse() function is called and calculates  the error score by comparing all one-step forecasts to the actual test.
+First, the `train_test_split()` function divides the supplied univariate time series dataset into training and test sets. Then the number of observations in the test set are enumerated. We make a one step forecast and for all the history we fit a model for each. The history and process is repeated for the true observation for the time step.to make a prediction we fit a model by calling the `sarima_forecast()` function. Finally the `measure_rmse()` function is called and calculates  the error score by comparing all one-step forecasts to the actual test.
 
-
-
-
-
+```
+# walk-forward validation for univariate data
+def walk_forward_validation(data, n_test, cfg):
+    predictions = list()
+    # split dataset
+    train = bank_train['amt'].tolist()
+    test = bank_val['amt'].tolist()
+    # seed history with training dataset
+    history = [x for x in train]
+    # step over each time-step in the test set
+    for i in range(len(test)):
+    	# fit model and make forecast for history
+    	yhat = sarima_forecast(history, cfg)
+    	# store forecast in list of predictions
+    	predictions.append(yhat)
+    	# add actual observation to history for the next loop
+    	history.append(test[i])
+    # estimate prediction error
+    error = measure_rmse(test, predictions)
+    return error
+```
 Figure 29 : Validation for univariate data code
 
 We can then call the walk_forward_validation() function with all the combinations of parameters.
-Some of these combinations might throw an error, or a warning, so we’ve also suppressed that. So we’ve encapsulated the walk_forward_validation() function within a try-except block. The score_model() function below does exactly this. it contains the walk_forward_validation() function within the try-except block and returns the model configurations and the loss associated with that particular combination.
 
+Some of these combinations might throw an error, or a warning, so we’ve also suppressed that. So we’ve encapsulated the `walk_forward_validation()` function within a try-except block. The `score_model()` function below does exactly this. it contains the `walk_forward_validation()` function within the `try-except` block and returns the model configurations and the loss associated with that particular combination.
+```
+# grid search configs
+def grid_search(data, cfg_list, n_test, parallel=True):
+	scores = None
+	if parallel:
+		# execute configs in parallel
+		executor = Parallel(n_jobs=cpu_count(), backend='multiprocessing')
+		tasks = (delayed(score_model)(data, n_test, cfg) for cfg in cfg_list)
+		scores = executor(tasks)
+	else:
+		scores = [score_model(data, n_test, cfg) for cfg in cfg_list]
+	# remove empty results
+	scores = [r for r in scores if r[1] != None]
+	# sort configs by error, asc
+	scores.sort(key=lambda tup: tup[1])
+	return scores
+```
 Figure 30 : Parallel execution of grid search code
-After this, we’ll have to loop through all the different combinations of parameters and call the score_model() function over and over again, with all those different combinations of parameters. This is arguably the most crucial step of the entire grid-search process.
+
+After this, we’ll have to loop through all the different combinations of parameters and call the `score_model()` function over and over again, with all those different combinations of parameters. This is arguably the most crucial step of the entire grid-search process.
+
+```
+# create a set of sarima configs to try
+def sarima_configs(seasonal=[0]):
+	models = list()
+	# define config lists
+	p_params = [0, 1, 2]
+	d_params = [0, 1] 
+	q_params = [0, 1, 2]
+	t_params = ['n','c','t','ct']
+	P_params = [0, 1, 2]
+	D_params = [0, 1]
+	Q_params = [0, 1, 2]
+	m_params = seasonal
+	# create config instances
+	for p in p_params:
+		for d in d_params:
+			for q in q_params:
+				for t in t_params:
+					for P in P_params:
+						for D in D_params:
+							for Q in Q_params:
+								for m in m_params:
+									cfg = [(p,d,q), (P,D,Q,m), t]
+									models.append(cfg)
+	return models
+```
 Figure 31 : Grid Search configuration code
-We will be using the joblib library to evaluate model configurations in parallel, so as to streamline this process. A list of modelconfiguration(list of lists), and number of time steps to use in time set, the grid_search() function below implements this behavior given an univariate time series dataset.
-Now finally, all we’re left to do is to make all the model configurations we want to test, and asrima_configs() function is meant to do exactly that
+
+We will be using the `joblib` library to evaluate model configurations in parallel, so as to streamline this process. A list of modelconfiguration(list of lists), and number of time steps to use in time set, the `grid_search()` function below implements this behavior given an univariate time series dataset.
+
+Now finally, all we’re left to do is to make all the model configurations we want to test, and `asrima_configs()` function is meant to do exactly that
+
+```
+# score a model, return None on failure
+def score_model(data, n_test, cfg, debug=False):
+	result = None
+	# convert config to a key
+	key = str(cfg)
+	# show all warnings and fail on exception if debugging
+	if debug:
+		result = walk_forward_validation(data, n_test, cfg)
+	else:
+		# one failure during model validation suggests an unstable config
+		try:
+			# never show warnings when grid searching, too noisy
+			with catch_warnings():
+				filterwarnings("ignore")
+				result = walk_forward_validation(data, n_test, cfg)
+		except:
+			error = None
+	# check for an interesting result
+	if result is not None:
+		print(' > Model[%s] %.3f' % (key, result))
+	return (key, result)
+```
 Figure 32 : SARIMA configuration code
 
- 
+
+```
+if __name__ == '__main__':
+	bank_train = bank_new[:int(bank_new.shape[0]*0.95)]
+	data = bank_new['amt']
+    # data split
+	n_test = 100
+    # model configs
+	cfg_list = sarima_configs()
+    # grid search
+	scores = grid_search(data, cfg_list, n_test)
+	print('done')
+    # list top 3 configs
+	for cfg, error in scores[:3]:
+		print(cfg, error)
+```
 Figure 33 : Main function calling functions and printing results
+
 Finally we call each function and The lowest RMSE we found across all the model configurations was $9,268,643.93
 
-3.7.2. Prophet
-Prophet is an open-source time series forecasting library developed by Facebook (now Meta) for ease of use by any person regardless of their technical knowledge in the Machine Learning domain.
-On a weekly or annual basis, it is utilized to create goals and distribute resources. Prophet is totally automated so that novices in data forecasting can quickly provide accurate predictions, but it also permits manual tweaking so that professionals may enhance outcomes by incorporating specific expertise. Prophet may automatically discover changes in trends by choosing change points from data and modeling yearly components using the fourier series, which works well with time series that contain seasonal impacts and numerous seasons of historical data. Prophet, however, is resilient to missing data, changes in trend, and generally handles outliers well. Prophet was open sourced by Facebook's core data science team in early 2017. Having been fully optimized for the business duties they confronted at Facebook.
-Prophet builds the model by finding out the best fitting line which is usually described by a combination of an overall growth trend, yearly seasonality, weekly seasonality and holiday effects.
-The input to Prophet is a dataframe with two columns: ds and y. The ds (datestamp) column ought to be of a format expected by Pandas; YYYY-MM-DD for a date or YYYY-MM-DD HH:MM:SS for a timestamp. The y section should be numeric, and should represent the measurement we wish to foresee.
-We initialize a of the Prophet class and afterward call its fit and forecast functions.
-Figure 34 : Prophet code
-You can get a reasonable dataframe that stretches out into the future a predetermined number of days utilizing Prophet.make_future_dataframe helper method
+#### 3.7.2. Prophet
 
-Figure 35 : Prophet predictions (yhat)
+Prophet is an open-source time series forecasting library developed by Facebook (now Meta) for ease of use by any person regardless of their technical knowledge in the Machine Learning domain.
+
+On a weekly or annual basis, it is utilized to create goals and distribute resources. Prophet is totally automated so that novices in data forecasting can quickly provide accurate predictions, but it also permits manual tweaking so that professionals may enhance outcomes by incorporating specific expertise. Prophet may automatically discover changes in trends by choosing change points from data and modeling yearly components using the fourier series, which works well with time series that contain seasonal impacts and numerous seasons of historical data. Prophet, however, is resilient to missing data, changes in trend, and generally handles outliers well. Prophet was open sourced by Facebook's core data science team in early 2017. Having been fully optimized for the business duties they confronted at Facebook.
+
+Prophet builds the model by finding out the best fitting line which is usually described by a combination of an overall growth trend, yearly seasonality, weekly seasonality and holiday effects.
+
+The input to Prophet is a dataframe with two columns: `ds` and `y`. The `ds` (datestamp) column ought to be of a format expected by Pandas; YYYY-MM-DD for a date or YYYY-MM-DD HH:MM:SS for a timestamp. The y section should be numeric, and should represent the measurement we wish to foresee.
+We initialize a of the Prophet class and afterward call its `fit` and `forecast` functions.
+
+```
+df = pd.DataFrame({'ds': bank_train['effective_date'], 'y': bank_train['amt']})
+m = Prophet()
+m.fit(df)
+future = m.make_future_dataframe(periods=len(bank_val))
+future.tail()
+forecast = m.predict(future)
+forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail()
+```
+Figure 34 : Prophet code
+
+You can get a reasonable dataframe that stretches out into the future a predetermined number of days utilizing `Prophet.make_future_dataframe` helper method
+
+| <img width="728" alt="image" src="https://user-images.githubusercontent.com/43529908/223243773-9bbd14b8-fd14-41d6-9628-24fde42b4c9f.png"> |
+|:----------:|
+| Figure 35 : Prophet predictions (yhat) |  
+
 We can plot the forecasts to get a more visual understanding of how good the predictions are.
 
-Figure 36 : Plot forecast(graph)
+```
+m.plot(forecast, uncertainty=True);
+```
+| ![Unknown](https://user-images.githubusercontent.com/43529908/223243935-ce97c1d2-4003-45e6-8f1d-fa93215c37c8.png) |
+|:----------:|
+| Figure 36 : Plot forecast(graph) | 
+
 We then compare the predictions with the validation data and obtain the RMSE value of $2,050,424 
 
-Figure 37 :  Loss Calculation (Prophet )
+```
+rmse = np.sqrt(np.sum(np.power((prophet['amt'] - prophet['yhat']), 2))/forecast.shape[0])
+print(rmse)
+```
+Figure 37 :  Loss Calculation (Prophet)
+
 The amount loss in the Prophet model is very much smaller than the loss amount in the median growth rate. because it is optimized specially for the business.
 
-3.7.3. LSTM
+#### 3.7.3. LSTM
 LSTMs are a popular deep learning model, used for any sequential data, be it unsegmented, connected handwriting recognition, guessing the next word, or speech recognition. LSTM addresses 1 major problem that typical RNNs face. That is, dealing with long term dependencies.
+
 Let’s look at how it’s being implemented
+
 We essentially have a series of amounts, and using that we have to predict what would come next (or at least some number close to the actual number). The input for the LSTM therefore looks something like this
+
 [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
 To apply this series to LSTM, we need to sample small series from the total series, and repeatedly predict the next number. This would look something like this
 
-Input
-Output
-[1, 2, 3, 4, 5]
-6
-[2, 3, 4, 5, 6]
-7
-[3, 4, 5, 6, 7]
-8
-…
-…
-[10, 11, 12, 13, 14]
-15
-
+| Input | Output |
+|:-----:|:------:|
+| [1, 2, 3, 4, 5] | 6 |
+| [2, 3, 4, 5, 6] | 7 |
+| [3, 4, 5, 6, 7] | 8 |
+| … | … |
+| [10, 11, 12, 13, 14] | 15 | 
 
 Table 2 : Sample LSTM training data
+
 So, we write a function for doing this
 
+```
+def sampling(sequence, n_steps):
+    X, Y = list(), list()
+    for i in range(len(sequence)):
+        sam = i + n_steps
+        if sam > len(sequence)-1:
+            break
+        x, y = sequence[i:sam], sequence[sam]
+        X.append(x)
+        Y.append(y)
+    return np.array(X), np.array(Y)
+```
 Figure 38 : function to sample the data for LSTM
-This takes in the series of numbers, and n_steps. n_steps is the length of the input list. It then samples all the data, and appends it to a list of lists that have all the input lists, and output numbers. 
-We then apply that function to our training and validation data
 
+This takes in the series of numbers, and n_steps. n_steps is the length of the input list. It then samples all the data, and appends it to a list of lists that have all the input lists, and output numbers. 
+
+We then apply that function to our training and validation data
+```
+n_steps = 30
+X, Y = sampling(bank_train['amt'].tolist(), n_steps)
+X_val, Y_val = sampling(bank_val['amt'].tolist(), n_steps)
+```
 Figure 39 :  Sampling of training and validation data
+
 We then define the model
+```
+model = Sequential()
+model.add(LSTM(50, activation='relu', input_shape=(n_steps, 1)))
+model.add(Dense(1))
+model.compile(optimizer='adam', loss='mean_squared_error')
+```
 Figure 40 : LSTM model code
+
 The network has a hidden layer with 50 LSTM blocks or neurons, and an output layer that makes a single value prediction. The default sigmoid activation function is used for the LSTM blocks. The network is trained for 60 epochs (20 epochs running 3 times). The final training looked like this : 
 
-Figure 41 : LSTM model training
+| <img width="1115" alt="image" src="https://user-images.githubusercontent.com/43529908/223247608-2cd17300-2213-4a40-a818-71252eda65b7.png"> |
+|:----------:|
+| Figure 41 : LSTM model training | 
+
 LSTM is rather suited for much larger multivariate data, and moreover, we don’t have the hardware to support longer lookbacks for LSTM, therefore, to set a baseline, we chose 50 units, and only 20 epochs for training.
+
 Our final loss comes out to be 120525556809728 which is the mean squared error.
+
 Taking square root of the loss, we get an RMSE of $10,978,413.21,  which is a lot, but it’s still better than our baseline model with the median growth rate. There is potential in the deep learning models, but they can only be used by massive corporations which have a lot of data and the processing power to run the complex deep learning models.
 
+## Results
+
+Loss Comparisons
+
+| Sl. No | Model | RMSE |
+|:------:|:-----:|:------:|
+| 1 | Median Growth Rate | $25,895,683.82 |
+| 2 | LSTM | $10,978,413 |
+| 3 | Prophet | $2,050,424.73 |
+| 4 | SARIMA | $9,343,297.14 |
+
+Table 3 : Loss Comparisons
+
+Prophet provides the least loss because it is optimized specially for the business, and while LSTM could be a great alternative, it requires a tonne of processing power, and so we weren’t able to run more units with larger lookbacks, and more layers.
+
+## Conclusions
+We started by understanding just what time-series is, and why we need to do time-series forecasting. We also explained how the business currently predicts the business amount and  how they currently manage their inventories and adapt according to the changing market demands and trends and how they can benefit from time-series forecasts. We then also expanded on how they can potentially expand and use more complicated models for more accurate predictions if they scaled their business and acquired more customer data. 
+
+In our case, we had bank data and ERP data, and for our use case we focused on small businesses and used the bank data and tried to make a univariate time series forecasting model. We had dates and the corresponding amount credited to that bank account on that particular date. We tried to find observable patterns, but we failed to recognize any. We then plotted year-on-year graphs for the daily, weekly and monthly basis. We concluded that the daily plots, although useful, were very noisy, and monthly plots, although very clear, were not very useful. So we finally decided to go with weekly predictions. 
+
+We compared MAE and RMSE to test the loss of our models, finally deciding to use RMSE for model comparison and evaluation and implemented 3 popular models, SARIMA, Prophet and LSTM for univariate time-series predictions. We also made a baseline model with median growth rate to compare these models against and see how effective and efficient they are.
+
+In our final comparison, we saw that the Prophet gave us the lowest loss. This is because it has been optimized keeping businesses in mind. LSTM, while not performing as good, and taking a lot of time, still is promising, because of its flexibility to include more data categories, which would be ideal for big businesses.
+
+Small businesses can only have univariate data which will be a day-to-day earnings of the business. In these cases, we can use the Prophet model as the best model for small businesses. Prophet is lightweight, fast, reliable, and has been made specifically keeping businesses in mind.
+
+For bigger businesses/massive corporations we can deploy a more advanced model like LSTM because it can predict with more accuracy and works best with a huge multivariate dataset that can only be collected by a big corporation.
