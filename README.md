@@ -344,7 +344,7 @@ fig.update_yaxes(tickprefix="$")
 Figure 13 :  Bank Year-On-Year graph on a daily basis code
 
 
-| ![newplot](https://user-images.githubusercontent.com/43529908/223077379-e3bcc3ba-0ac8-4300-99bc-052be2c84439.png) |
+| <img width="1180" alt="image" src="https://user-images.githubusercontent.com/43529908/223078071-9ad5685e-1a9b-4ea2-be42-3a60ca621274.png"> |
 |:----------:|
 | Figure 14 : Bank Year-On-Year graph on a daily basis |
 
