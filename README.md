@@ -450,27 +450,64 @@ It’s because in our scenario, A difference of $20 Million isn’t just twice a
 ### 3.6 Base Model Implementation
 
 Baseline models are simple by definition. They typically have a small number of trainable parameters and may be easily and quickly fitted to your data.
-Thus, simple models are the following in engineering:
-faster training, providing immediate performance feedback.
-Better studying means that the most of the faults you run into will either be simple model bugs or will reveal a problem with your data.
-They are quicker for inference, thus deploying them doesn't call for a lot of infrastructure engineering and won't add to latency.
-The optimum time to decide what to do next is after you've constructed and implemented a baseline model.
-A baseline provides context for a more sophisticated model.
-The performance that is trivially achievable is a benchmark that you would expect any model could surpass. The accuracy you would obtain while inferring the most prevalent class in a classification task could serve as an illustration of this value.
-Human performance, or how well a person can complete this task, is the level. When compared to humans, computers are significantly better at some skills (like playing Go) than others (like writing poetry). Knowing how skilled a human is at something might help you calibrate your algorithm's expectations in advance, but as the human/computer gap varies greatly by field, some literature research may be necessary.
-Before choosing the best model , We made the base model which is the simplest model. The complex models we used after this are supposed to be much better than this. So based on the base model, we decide whether the complex model should be implemented or not. and we can compare the time taken to predict, accuracy and the RMSE value .
 
+Thus, simple models are the following in engineering:
+
+- faster training, providing immediate performance feedback.
+- Better studying means that the most of the faults you run into will either be simple model bugs or will reveal a problem with your data.
+- They are quicker for inference, thus deploying them doesn't call for a lot of infrastructure engineering and won't add to latency.
+
+The optimum time to decide what to do next is after you've constructed and implemented a baseline model.
+
+A baseline provides context for a more sophisticated model.
+
+The performance that is trivially achievable is a benchmark that you would expect any model could surpass. The accuracy you would obtain while inferring the most prevalent class in a classification task could serve as an illustration of this value.
+
+Human performance, or how well a person can complete this task, is the level. When compared to humans, computers are significantly better at some skills (like playing Go) than others (like writing poetry). Knowing how skilled a human is at something might help you calibrate your algorithm's expectations in advance, but as the human/computer gap varies greatly by field, some literature research may be necessary.
+
+Before choosing the best model , We made the base model which is the simplest model. The complex models we used after this are supposed to be much better than this. So based on the base model, we decide whether the complex model should be implemented or not. and we can compare the time taken to predict, accuracy and the RMSE value.
+```
+bank_yoy = pd.pivot_table(bank_new, values='amt', index='week_number', columns='year', aggfunc='sum')
+bank_yoy.dropna(subset = [2021], inplace=True)
+
+bank_yoy['gr_18-19'] = bank_yoy[2019]/bank_yoy[2018]
+bank_yoy['gr_19-20'] = bank_yoy[2020]/bank_yoy[2019]
+bank_yoy['gr_20-21'] = bank_yoy[2021]/bank_yoy[2020]
+
+
+bank_yoy['median_gr'] = np.median([bank_yoy['gr_18-19'], bank_yoy['gr_19-20'], bank_yoy['gr_20-21']])
+
+# Dropping the individual growth_rates for a cleaner look
+bank_yoy.drop(['gr_18-19', 'gr_19-20', 'gr_20-21'], axis=1, inplace=True)
+
+# Making Predictions using the median_gr
+bank_yoy['2022_pred'] = bank_yoy[2021]*bank_yoy['median_gr']
+
+bank_yoy.head(10)
+```
 Figure 21 : Median Growth Rate Code
-Baseline Model with Median Growth Rate
+
+
+##### Baseline Model with Median Growth Rate
+
 In layman's words, the growth rate of a function f(x) refers to how quickly the value of f(x) rises or decreases as the value of x increases. For example, if f(x)=x, the function rises by one unit for every unit increase in x, but if f(x)=10x, the function increases by ten units for every unit increase in x.
+
 When an algorithm's input increases, the number of steps it takes can be estimated using growth functions.
+
 In our case, the growth rate would be the increase in year x with respect to the previous year x-1. So the growth rate of the year 2021 would be the amount earned in year 2021 divided by the amount earned in the year 2020. Similarly, we can calculate the growth rate of a particular week of an year, by contrasting it against that particular week of the previous year.
+
 From here on, when we say growth rate of any year, we mean growth rate of that year on a week by week basis
+
 In the Baseline model, we first calculated the base growth rate for the year 2019, 2020 and 2021. Then we calculated the median growth rate by taking the median of all the previous growth rates.
+
 In a previous section, we had mentioned earlier why median is a more appropriate measure compared to a mean in our case. 
+
 After that by multiplying the median growth rate with the amount in 2021, we can predict the amount for 2022.
 
- Figure 22 : Median Growth Rate predictions (2022_pred)
+| <img width="912" alt="image" src="https://user-images.githubusercontent.com/43529908/223221380-033173e0-5568-44c6-bf8c-9e254e706ba8.png"> |
+|:----------:|
+| Figure 22 : Median Growth Rate predictions (2022_pred)  |  
+
 
 We can already see a big difference in week 7. Investigating it further, we found that only 1 day of week 7 is captured in 2022.So we are eliminating this entire week.
 
